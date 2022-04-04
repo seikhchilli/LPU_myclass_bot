@@ -28,7 +28,7 @@ cd LPU_myclass_bot
 python main.py
 ```
 Enter your myclass username and password:
-![](http://url/to/img.png)
+![screenshot](./login_screenshot.png)
 
 
 
@@ -37,5 +37,6 @@ Enter your myclass username and password:
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 
+
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](./LICENSE)
