@@ -9,9 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 
 
-def get_current_time():
-        t = time.localtime()
-        return (time.strftime("%H:%M:%S", t))
+userid, userpass = myclass_credentials.get_credentials()
 
 options = Options()
 options.add_experimental_option("excludeSwitches", ["enable-automation", 'enable-logging'])
@@ -31,23 +29,30 @@ driver.implicitly_wait(5)
 
 driver.maximize_window()
 
+def get_current_time():
+        t = time.localtime()
+        return (time.strftime("%H:%M:%S", t))
+
 
 #login
-try:
-    username = driver.find_element(by = By.NAME, value="i")
-    password = driver.find_element(by = By.NAME, value = "p")
-except:
-    print("No element found with name i or p")
+def myclasslogin():
+    try:
+        username = driver.find_element(by = By.NAME, value="i")
+        password = driver.find_element(by = By.NAME, value = "p")
+    except:
+        print("No element found with name i or p")
 
-username.send_keys(myclass_credentials.userid) 
-password.send_keys(myclass_credentials.password)
-password.send_keys(Keys.RETURN)
+    username.send_keys(userid) 
+    password.send_keys(userpass)
+    password.send_keys(Keys.RETURN)
 
-#select class option
-try:
-    driver.find_element(by=By.LINK_TEXT, value="View Classes/Meetings").click()
-except:
-    print("Class option not found")
+    #select class option
+    try:
+        driver.find_element(by=By.LINK_TEXT, value="View Classes/Meetings").click()
+    except:
+        print("Class option not found")
+    
+    return time.time()
 
 #get all the class links
 def get_class_links():
@@ -65,11 +70,12 @@ def get_running_class(class_list):
                 return i
 
 
-
+start_time = myclasslogin()
 while True:
     running_class = None
 
     #wait for class to start
+    
     while running_class == None:
         class_list = get_class_links()
         running_class = get_running_class(class_list)
@@ -83,6 +89,12 @@ while True:
         for i in range(30):
             print("\rWaiting for class to start" + '.' * i + ' '*(30-i), end = "")
             time.sleep(1)
+        
+        time_elapsed = time.time() - start_time
+        if time_elapsed > 1800 :
+            driver.refresh()
+            if driver.title == "My Class Login - Lovely Professional University":
+                start_time = myclasslogin()
     
     #join class
     try:
@@ -155,6 +167,8 @@ while True:
 
 
     time.sleep(60)
+
+
 
 
 
