@@ -91,10 +91,12 @@ while True:
             time.sleep(1)
         
         time_elapsed = time.time() - start_time
-        if time_elapsed > 1800 :
+        print("Time elapsed : " + str(time_elapsed))
+        if time_elapsed > 900 :
             driver.refresh()
+            start_time = time.time()
             if driver.title == "My Class Login - Lovely Professional University":
-                start_time = myclasslogin()
+                myclasslogin()
     
     #join class
     try:
@@ -103,6 +105,12 @@ while True:
         print("\nJoined class at " + get_current_time())
     except:
         print("join button not found")
+
+    waiting_for_class = driver.find_elements(by = By.ID, value = "joinCountDown")
+
+    while len(waiting_for_class) != 0:
+        time.sleep(120)
+        waiting_for_class = driver.find_elements(by = By.ID, value ="joinCountDown")
 
 
     driver.switch_to.frame("frame")
