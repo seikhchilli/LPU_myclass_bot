@@ -1,4 +1,5 @@
 import time
+import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -21,6 +22,13 @@ service = Service(executable_path=ChromeDriverManager().install())
 
 
 driver = webdriver.Chrome(service = service, options=options)
+
+banner_file = random.choice(os.listdir("banners"))
+banner = open('banners/' + banner_file, 'r')
+
+print('\n\n')
+print(banner.read())
+print('\n\n')
 
 
 driver.get("https://myclass.lpu.in/")
