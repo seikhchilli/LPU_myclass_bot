@@ -91,7 +91,6 @@ while True:
             time.sleep(1)
         
         time_elapsed = time.time() - start_time
-        print("Time elapsed : " + str(time_elapsed))
         if time_elapsed > 900 :
             driver.refresh()
             start_time = time.time()
