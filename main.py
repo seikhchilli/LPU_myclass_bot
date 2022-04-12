@@ -23,12 +23,15 @@ service = Service(executable_path=ChromeDriverManager().install())
 
 driver = webdriver.Chrome(service = service, options=options)
 
-banner_file = random.choice(os.listdir("banners"))
-banner = open('banners/' + banner_file, 'r')
+try:
+    banner_file = random.choice(os.listdir("banners"))
+    banner = open('banners/' + banner_file, 'r')
 
-print('\n\n')
-print(banner.read())
-print('\n\n')
+    print('\n\n')
+    print(banner.read())
+    print('\n\n')
+except:
+    pass
 
 
 driver.get("https://myclass.lpu.in/")
