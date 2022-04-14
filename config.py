@@ -1,7 +1,7 @@
 import pickle
 from config_class import config
 
-pickle_obj = open('config.pickle', 'rb')
+pickle_obj = open('configuration.pickle', 'rb')
 config_obj = pickle.load(pickle_obj)
 
 
@@ -42,6 +42,6 @@ while True:
     
 pickle_obj.close()
 config_obj = config()
-pickle_obj = open("config.pickle", 'wb')
+pickle_obj = open("configuration.pickle", 'wb')
 pickle.dump(config_obj, pickle_obj)
 
