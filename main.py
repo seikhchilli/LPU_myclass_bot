@@ -1,3 +1,5 @@
+import pickle
+from config_class import config
 import time
 import os
 from selenium import webdriver
@@ -10,13 +12,14 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 
 
-userid, userpass = myclass_credentials.get_credentials()
+
 
 options = Options()
 options.add_experimental_option("excludeSwitches", ["enable-automation", 'enable-logging'])
 
 prefs = {"credentials_enable_service": False, "profile.password_manager_enabled": False}
 options.add_experimental_option("prefs", prefs)
+options.add_argument('use-fake-ui-for-media-stream')
 
 service = Service(executable_path=ChromeDriverManager().install())
 
@@ -44,7 +47,11 @@ def get_current_time():
         t = time.localtime()
         return (time.strftime("%H:%M:%S", t))
 
+pickle_obj = open("configuration.pickle", 'rb')
+config_obj = pickle.load(pickle_obj)
 
+if config_obj.userid == None or config_obj.password == None:
+    userid, userpass = myclass_credentials.get_credentials()
 #login
 def myclasslogin():
     try:
@@ -53,9 +60,15 @@ def myclasslogin():
     except:
         print("No element found with name i or p")
 
-    username.send_keys(userid) 
-    password.send_keys(userpass)
-    password.send_keys(Keys.RETURN)
+    if config_obj.userid == None or config_obj.password == None:
+        username.send_keys(userid) 
+        password.send_keys(userpass)
+        password.send_keys(Keys.RETURN)
+    else:
+        username.send_keys(config_obj.userid) 
+        password.send_keys(config_obj.password)
+        password.send_keys(Keys.RETURN)
+
 
     #select class option
     try:
@@ -79,6 +92,22 @@ def get_running_class(class_list):
             style = i.get_attribute("style")
             if "background: green;" in style:
                 return i
+
+def answer_poll():
+    poll_options = driver.find_elements(by = By.CLASS_NAME, value="pollButtonWrapper--Z12PRiw")
+
+    if len(poll_options) != 0:
+        print("\nPoll appeared at " + get_current_time())
+
+        option = random.choice(poll_options)
+
+        try:
+            print("Option selected : ", end="")
+            print(option.find_element(by = By.CLASS_NAME, value="button--Z2dosza").get_attribute("aria-label"))
+        except:
+            print("option unknown")
+
+        option.click()
 
 
 start_time = myclasslogin()
@@ -127,43 +156,44 @@ while True:
 
     #select listen only mode
     try:
-        driver.find_element(by = By.XPATH, value = "//*[text()='Listen only']").click()
+        if config_obj.listen_mode == '2':
+            driver.find_element(by = By.XPATH, value = "//*[text()='Microphone']").click()
+            time.sleep(3)
+            driver.find_element(by = By.XPATH, value = "//*[text()='Yes']").click()
+        else:
+            driver.find_element(by = By.XPATH, value = "//*[text()='Listen only']").click()
     except:
         print("Listen only button not found.")
 
-    poll_options_count = 0
-    while True:
-        #check if class is running
-        class_running = driver.find_elements(by = By.CLASS_NAME, value="main--Z1w6YvE")
+    if config_obj.poll_mode == '1':
+        while True:
+            #check if class is running
+            class_running = driver.find_elements(by = By.CLASS_NAME, value="main--Z1w6YvE")
 
-        if len(class_running) == 0:
-            break
+            if len(class_running) == 0:
+                break
 
             
+            for i in range(30):
+                print("\rClass Running" + '.' * i + ' '*(30-i), end = "")
+                time.sleep(1)
+    else:
+        while True:
+            #check if class is running
+            class_running = driver.find_elements(by = By.CLASS_NAME, value="main--Z1w6YvE")
 
-        poll_options = driver.find_elements(by = By.CLASS_NAME, value="pollButtonWrapper--Z12PRiw")
+            if len(class_running) == 0:
+                break
+            
+            answer_poll()
+            
+            for i in range(30):
+                print("\rClass Running" + '.' * i + ' '*(30-i), end = "")
+                time.sleep(1)
 
-        if len(poll_options) != 0:
-            print("\nPoll appeared at " + get_current_time())
-            poll_options_count += 1
-
-            option = random.choice(poll_options)
-
-            try:
-                print("Option selected : ", end="")
-                print(option.find_element(by = By.CLASS_NAME, value="button--Z2dosza").get_attribute("aria-label"))
-            except:
-                print("option unknown")
-
-            option.click()
-        
-        for i in range(30):
-            print("\rClass Running" + '.' * i + ' '*(30-i), end = "")
-            time.sleep(1)
     
     #class over
-    print("\nTotal numbers of poll appeared : " + str(poll_options_count))
-    print("class over at " + get_current_time())
+    print("Class over at " + get_current_time())
 
     try:
         driver.find_element(by = By.CLASS_NAME, value = "button--Z2dosza").click()

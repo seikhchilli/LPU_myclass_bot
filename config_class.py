@@ -1,5 +1,5 @@
 class config:
     userid = None
     password = None
-    listen_mode = None
-    poll_mode = None
+    listen_mode = 1
+    poll_mode = 1
