@@ -11,8 +11,11 @@ import myclass_credentials
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 
+pickle_obj = open("configuration.pickle", 'rb')
+config_obj = pickle.load(pickle_obj)
 
-
+if config_obj.userid == None or config_obj.password == None:
+    userid, userpass = myclass_credentials.get_credentials()
 
 options = Options()
 options.add_experimental_option("excludeSwitches", ["enable-automation", 'enable-logging'])
@@ -37,6 +40,8 @@ except:
     pass
 
 
+print("\n**To change the configuration, run 'python config.py'\n")
+
 driver.get("https://myclass.lpu.in/")
 
 driver.implicitly_wait(5)
@@ -47,11 +52,9 @@ def get_current_time():
         t = time.localtime()
         return (time.strftime("%H:%M:%S", t))
 
-pickle_obj = open("configuration.pickle", 'rb')
-config_obj = pickle.load(pickle_obj)
 
-if config_obj.userid == None or config_obj.password == None:
-    userid, userpass = myclass_credentials.get_credentials()
+
+
 #login
 def myclasslogin():
     try:
